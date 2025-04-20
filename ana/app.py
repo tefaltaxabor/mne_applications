@@ -8,9 +8,9 @@ sample_data_raw_file = (
 )
 raw = mne.io.read_raw_fif(sample_data_raw_file)
 
-print("\n")
-print("el largo es", raw.__len__())
-print("\n")
+#print("\n")
+#print("el largo es", raw.__len__())
+#print("\n")
 
 print(raw)
 print(raw.info)
@@ -21,3 +21,4 @@ raw.compute_psd(fmax=50).plot(picks="data", exclude="bads", amplitude=False)
 raw.plot(duration=5, n_channels=30) #mne method plot EEG data
 
 plt.show() #para mantener los graficos abiertos
+#check for bad channels 
