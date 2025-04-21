@@ -2,23 +2,41 @@ import mne
 import numpy as np
 import matplotlib.pyplot as plt 
 
-sample_data_folder = mne.datasets.sample.data_path()
-sample_data_raw_file = (
-    sample_data_folder / "MEG" / "sample" / "sample_audvis_filt-0-40_raw.fif"
-)
-raw = mne.io.read_raw_fif(sample_data_raw_file)
+raw = mne.io.read_raw_edf(r"C:\\Users\\gabri\\Desktop\\project\\data\\S001R03.edf",preload=True)
 
-#print("\n")
-#print("el largo es", raw.__len__())
-#print("\n")
-
-print(raw)
 print(raw.info)
 
-#since the data is alredy filtered by a low pass filter f_g = 50 Hz 
-#dice 40 como low pass wtf
-raw.compute_psd(fmax=50).plot(picks="data", exclude="bads", amplitude=False) 
-raw.plot(duration=5, n_channels=30) #mne method plot EEG data
+raw.plot(n_channels=10, title="EEG Raw", block=True)
 
-plt.show() #para mantener los graficos abiertos
-#check for bad channels 
+#unreadable data 
+#events = mne.read_events("C:\\Users\\gabri\\Desktop\\project\\data\\S001R01.edf.event")
+#mne.viz.plot_events(events, sfreq=raw.info['sfreq'])
+
+# Extraer eventos desde anotaciones embebidas
+events, event_id = mne.events_from_annotations(raw)
+
+print("\nEventos extraídos:")
+print(events[:5])
+print("\nDiccionario de etiquetas:")
+print(event_id)
+
+# Visualizar eventos
+mne.viz.plot_events(events, sfreq=raw.info['sfreq'])
+
+#etiquetas con puntos extras (eliminar)
+def clean_name(name):
+    return name.replace('.', '').upper()
+
+raw.rename_channels(clean_name)
+
+# Mostrar posiciones de electrodos
+raw.set_montage("standard_1020", on_missing='ignore')
+raw.plot_sensors(show_names=True)
+
+
+print(raw.info['ch_names'])
+#comprobar el montaje
+#template_s1020_montage = mne.channels.make_standard_montage("standard_1020")
+#print(template_s1020_montage.ch_names)
+
+input("Press enter to exit")
